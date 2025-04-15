@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rarible NFT Search</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rarible-dark-bg: #151515;
+            --rarible-card-bg: #222222;
+            --rarible-purple: #8E3FF3;
+            --rarible-purple-hover: #7E35D1;
+            --rarible-text: #FFFFFF;
+            --rarible-text-secondary: #808080;
+            --rarible-border: #333333;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: var(--rarible-dark-bg);
+            color: var(--rarible-text);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--rarible-border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--rarible-text);
+        }
+
+        .logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: var(--rarible-text);
+        }
+
+        .search-container {
+            background-color: var(--rarible-card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--rarible-text);
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: var(--rarible-dark-bg);
+            border: 1px solid var(--rarible-border);
+            border-radius: 12px;
+            font-size: 16px;
+            color: var(--rarible-text);
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: var(--rarible-purple);
+            box-shadow: 0 0 0 2px rgba(142, 63, 243, 0.2);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin: 16px 0;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: var(--rarible-text);
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            accent-color: var(--rarible-purple);
+        }
+
+        button {
+            padding: 14px 24px;
+            background-color: var(--rarible-purple);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--rarible-purple-hover);
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            background-color: var(--rarible-text-secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(21, 21, 21, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--rarible-card-bg);
+            border-top: 4px solid var(--rarible-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        ::placeholder {
+            color: var(--rarible-text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="spinner-overlay" id="spinnerOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="header">
+        <a href="/" class="logo" style="text-decoration: none;">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSI4IiBmaWxsPSIjRkVFNTAwIi8+PHBhdGggZD0iTTExLjI4ODcgMTUuODI3NkwxOS45OTc0IDExLjE5OTJMMjguNzEyNyAxNS44Mjc2TDE5Ljk5NzQgMjAuNDU2TDExLjI4ODcgMTUuODI3NloiIGZpbGw9ImJsYWNrIi8+PHBhdGggZD0iTTExLjI4ODcgMjQuMTc0NUwxOS45OTc0IDE5LjU0NjFMMjguNzEyNyAyNC4xNzQ1TDE5Ljk5NzQgMjguODAyOUwxMS4yODg3IDI0LjE3NDVaIiBmaWxsPSJibGFjayIvPjwvc3ZnPg==" alt="Rarible">
+            Rarible Search
+        </a>
+    </div>
+
+    <div class="search-container">
+        <h1>NFT Search Tool</h1>
+        <form id="searchForm" action="/search" method="post">
+            <div class="form-group">
+                <label>Search Options</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" id="search_name" name="search_field" value="NAME" checked>
+                        Search by Name
+                    </label>
+                    
+                    <label class="radio-option">
+                        <input type="radio" id="search_description" name="search_field" value="DESCRIPTION">
+                        Search by Description
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="search_text">Search Text</label>
+                    <input type="text" id="search_text" name="search_text" required 
+                           placeholder="Enter your search term...">
+                </div>
+            </div>
+            
+            <button type="submit" id="searchButton">
+                Search NFTs
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            document.getElementById('spinnerOverlay').style.display = 'flex';
+            const searchButton = document.getElementById('searchButton');
+            searchButton.disabled = true;
+        });
+    </script>
+</body>
+</html> 

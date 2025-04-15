@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rarible Search Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <style>
+        :root {
+            --rarible-dark-bg: #151515;
+            --rarible-card-bg: #222222;
+            --rarible-purple: #8E3FF3;
+            --rarible-purple-hover: #7E35D1;
+            --rarible-text: #FFFFFF;
+            --rarible-text-secondary: #808080;
+            --rarible-border: #333333;
+            --rarible-row-alt: #1A1A1A;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            max-width: none;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: var(--rarible-dark-bg);
+            color: var(--rarible-text);
+        }
+
+        .header {
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--rarible-border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--rarible-text);
+        }
+
+        .logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            max-width: 1200px;
+            margin: 0 auto 32px auto;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--rarible-text);
+        }
+
+        .results-container {
+            background-color: var(--rarible-card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 0 auto 32px auto;
+            overflow-x: auto;
+            min-width: fit-content;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 24px;
+            background-color: var(--rarible-card-bg);
+        }
+
+        .table th, .table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--rarible-border);
+            color: var(--rarible-text);
+        }
+
+        .table th {
+            background-color: var(--rarible-card-bg);
+            font-weight: 600;
+            color: var(--rarible-text);
+            text-align: left;
+        }
+
+        .table tbody tr {
+            background-color: var(--rarible-card-bg);
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: var(--rarible-row-alt);
+        }
+
+        a.new-search {
+            display: inline-flex;
+            align-items: center;
+            padding: 14px 24px;
+            background-color: var(--rarible-purple);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        a.new-search:hover {
+            background-color: var(--rarible-purple-hover);
+            transform: translateY(-1px);
+        }
+
+        .dataTables_wrapper {
+            color: var(--rarible-text);
+        }
+
+        .dataTables_filter {
+            margin-bottom: 16px;
+        }
+
+        .dataTables_filter label {
+            color: var(--rarible-text);
+        }
+
+        .dataTables_length label {
+            color: var(--rarible-text);
+        }
+
+        .dataTables_filter input {
+            background-color: var(--rarible-dark-bg);
+            border: 1px solid var(--rarible-border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--rarible-text);
+            margin-left: 8px;
+        }
+
+        .dataTables_filter input:focus {
+            outline: none;
+            border-color: var(--rarible-purple);
+            box-shadow: 0 0 0 2px rgba(142, 63, 243, 0.2);
+        }
+
+        .dataTables_length select {
+            background-color: var(--rarible-dark-bg);
+            border: 1px solid var(--rarible-border);
+            border-radius: 8px;
+            padding: 8px;
+            color: var(--rarible-text);
+            margin: 0 8px;
+        }
+
+        .dataTables_info {
+            color: var(--rarible-text-secondary);
+            margin-top: 16px;
+        }
+
+        .dataTables_paginate {
+            margin-top: 16px;
+        }
+
+        .dataTables_paginate .paginate_button {
+            padding: 8px 12px;
+            margin: 0 4px;
+            border: 1px solid var(--rarible-border) !important;
+            border-radius: 8px;
+            background: var(--rarible-card-bg) !important;
+            color: var(--rarible-text) !important;
+        }
+
+        .dataTables_paginate .paginate_button.current,
+        .dataTables_paginate .paginate_button:hover:not(.disabled) {
+            background: var(--rarible-purple) !important;
+            color: white !important;
+            border-color: var(--rarible-purple) !important;
+        }
+
+        .dataTables_paginate .paginate_button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .spinner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(21, 21, 21, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--rarible-card-bg);
+            border-top: 4px solid var(--rarible-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .button-container {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 14px 24px;
+            background-color: var(--rarible-purple);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            background-color: var(--rarible-purple-hover);
+            transform: translateY(-1px);
+        }
+
+        .download-button {
+            background-color: var(--rarible-card-bg);
+            border: 2px solid var(--rarible-purple);
+        }
+
+        .download-button:hover {
+            background-color: var(--rarible-purple);
+        }
+    </style>
+</head>
+<body>
+    <div class="spinner-overlay" id="spinnerOverlay"></div>
+    
+    <div class="header">
+        <a href="/" onclick="showSpinner()" class="logo" style="text-decoration: none;">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSI4IiBmaWxsPSIjRkVFNTAwIi8+PHBhdGggZD0iTTExLjI4ODcgMTUuODI3NkwxOS45OTc0IDExLjE5OTJMMjguNzEyNyAxNS44Mjc2TDE5Ljk5NzQgMjAuNDU2TDExLjI4ODcgMTUuODI3NloiIGZpbGw9ImJsYWNrIi8+PHBhdGggZD0iTTExLjI4ODcgMjQuMTc0NUwxOS45OTc0IDE5LjU0NjFMMjguNzEyNyAyNC4xNzQ1TDE5Ljk5NzQgMjguODAyOUwxMS4yODg3IDI0LjE3NDVaIiBmaWxsPSJibGFjayIvPjwvc3ZnPg==" alt="Rarible">
+            Rarible Search
+        </a>
+    </div>
+
+    <div class="results-container">
+        <h1>Search Results</h1>
+        <div class="button-container" style="margin-bottom: 20px;">
+            <a href="/" onclick="showSpinner()" class="action-button">New Search</a>
+            <a href="/download_csv" class="action-button download-button">Download CSV</a>
+        </div>
+        {{ table | safe }}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script>
+        // Hide spinner immediately when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const spinnerOverlay = document.getElementById('spinnerOverlay');
+            if (spinnerOverlay) {
+                spinnerOverlay.style.display = 'none';
+            }
+            
+            // Also check parent window if in iframe
+            if (window.parent && window.parent.document) {
+                const parentSpinner = window.parent.document.getElementById('spinnerOverlay');
+                if (parentSpinner) {
+                    parentSpinner.style.display = 'none';
+                }
+            }
+        });
+
+        $(document).ready(function() {
+            $('.table').DataTable({
+                "pageLength": 25,
+                "order": [[0, "asc"]],
+                "responsive": true,
+                "searching": true,
+                "language": {
+                    "search": "Filter results:",
+                    "paginate": {
+                        "next": "→",
+                        "previous": "←"
+                    }
+                }
+            });
+
+            // Override DataTables background styles
+            $('table.dataTable tbody tr').css('background-color', 'var(--rarible-card-bg)');
+            $('table.dataTable tbody tr:nth-child(even)').css('background-color', 'var(--rarible-row-alt)');
+        });
+
+        function showSpinner() {
+            document.getElementById('spinnerOverlay').style.display = 'flex';
+        }
+    </script>
+</body>
+</html> 

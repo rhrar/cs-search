@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #151515;
+            color: #FFFFFF;
+        }
+        .error {
+            color: #ff4d4d;
+            padding: 20px;
+            border: 1px solid #ff4d4d;
+            border-radius: 12px;
+            margin: 20px 0;
+            background-color: rgba(255, 77, 77, 0.1);
+        }
+        a {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #8E3FF3;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        a:hover {
+            background-color: #7E35D1;
+            transform: translateY(-1px);
+        }
+        h1 {
+            color: #FFFFFF;
+            font-size: 24px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <h1>Error</h1>
+    <div class="error">
+        {{ error }}
+    </div>
+    <a href="/" onclick="hideSpinner()">Try Again</a>
+
+    <script>
+        // Hide any existing spinners when the error page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            hideSpinner();
+        });
+
+        function hideSpinner() {
+            // Hide spinner in parent window if it exists
+            if (window.parent && window.parent.document) {
+                const parentSpinner = window.parent.document.getElementById('spinnerOverlay');
+                if (parentSpinner) {
+                    parentSpinner.style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html> 
